@@ -1,0 +1,201 @@
+#Step 1: Import Necessary Modules
+import sys
+import os.path
+import pandas as pd
+import numpy as np
+from numpy import where
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+from sklearn.cluster import KMeans
+#from sklearn.datasets.samples_generator import make_blobs
+from sklearn.preprocessing import StandardScaler
+
+np.random.seed(0)
+centers = [[1, 1], [-1, -1]]
+n_clusters = len(centers)
+#X, labels_true = make_blobs(n_samples=3000, centers=centers, cluster_std=0.5)
+
+file_path = 'output23_file.txt'
+sys.stdout = open(file_path, "w")
+
+
+#Step 2: Import csv file
+df = pd.read_csv("captured_file.csv", sep=',', header=0)
+df.shape
+df.info()
+
+df.isnull().sum()
+
+
+#Step 3: Clean & Prep the DataFrame
+#drop rows with NA values in any columns
+df = df.dropna()
+
+#create scaled DataFrame where each variable has mean of 0 and standard dev of 1
+scaled_df = StandardScaler().fit_transform(df)
+
+#view first five rows of scaled DataFrame
+#print(scaled_df[:5])
+
+#Step 4: Find the Optimal Number of Clusters
+#initialize kmeans parameters
+kmeans_kwargs = {
+"init": "random",
+"n_init": 10,
+"random_state": 1,
+}
+
+#create list to hold SSE values for each k
+sse = [] #sum of squared errors
+for k in range(1, 11):
+    kmeans = KMeans(n_clusters=k, **kmeans_kwargs)
+    kmeans.fit(scaled_df)
+    sse.append(kmeans.inertia_)
+
+#visualize results
+plt.plot(range(1, 11), sse)
+plt.xticks(range(1, 11))
+plt.xlabel("Number of Clusters")
+plt.ylabel("SSE")
+#plt.show()
+plt.savefig('Cluster23_graph.png')
+#Note: Where the sum of squares begins to “bend” or level off, this is typically the optimal number of clusters.
+
+
+
+#Step 5: Perform K-Means Clustering with Optimal K
+#instantiate the k-means class, using optimal number of clusters
+kmeans = KMeans(init="random", n_clusters=2, n_init=10, random_state=1)
+
+
+#fit k-means algorithm to data
+kmeans.fit(scaled_df)
+
+#append cluster assingments to original DataFrame
+df['cluster'] = kmeans.labels_
+#view updated DataFrame
+print(df.to_string())
+#print(df, file = output_file)
+
+
+test_std = df[['Time','GS_PROCESSOR_TEMPERATURE','COM_PROCESSOR_TEMPERATURE','GS_PROCESSOR_VOLTAGE','COM_PROCESSOR_VOLTAGE','ADCS_ROTATIONAL_SPEED','ADCS_MAGNETIC_ANGLE']].std()
+print(test_std)
+
+
+
+Y = df[["Time", "COM_PROCESSOR_TEMPERATURE"]]
+A = df[["Time", "GS_PROCESSOR_VOLTAGE"]]
+B = df[["Time", "COM_PROCESSOR_VOLTAGE"]]
+C = df[["Time", "ADCS_ROTATIONAL_SPEED"]]
+D = df[["Time", "ADCS_MAGNETIC_ANGLE"]]
+
+#scaled_X = StandardScaler().fit_transform(X)
+scaled_Y = StandardScaler().fit_transform(Y)
+scaled_A = StandardScaler().fit_transform(A)
+scaled_B = StandardScaler().fit_transform(B)
+scaled_C = StandardScaler().fit_transform(C)
+scaled_D = StandardScaler().fit_transform(D)
+
+
+#kmeans.fit(scaled_X)
+kmeans.fit(scaled_Y)
+kmeans.fit(scaled_A)
+kmeans.fit(scaled_B)
+kmeans.fit(scaled_C)
+kmeans.fit(scaled_D)
+
+
+#GS_Pro_Cluster = kmeans.labels_
+#print(GS_Cluster)
+df["GS_Pro_Cluster"] = kmeans.labels_
+df["Com_Pro_Cluster"] = kmeans.labels_
+df["GS_Voltage_Cluster"] = kmeans.labels_
+df["Com_Voltage_Cluster"] = kmeans.labels_
+df["GS_RotationSpeed_Cluster"] = kmeans.labels_
+df["MagneticAngle_Cluster"] = kmeans.labels_
+
+
+col1_list = df[["GS_Pro_Cluster", "Com_Pro_Cluster", "GS_Voltage_Cluster", "Com_Voltage_Cluster", "GS_RotationSpeed_Cluster", "MagneticAngle_Cluster", "cluster"]]
+#print(col1_list)
+
+
+
+col_list = col1_list.sort_values(by=['cluster'])
+#print(col_list)
+result = col_list.loc[df['cluster'] == 1]
+#print(result)
+df_list = result.values.tolist()
+df_lists = ';'.join(map(str, df_list))
+#print(df_lists)
+
+result_1 = str(df_lists)
+result_2 = result_1.replace("[", "")
+result_3 = result_2.replace("]", "")
+df_list1 = result_3.replace(" ", '')
+#print(df_list1)
+#---------------------------------
+result1 = col_list.loc[df['cluster'] == 0]
+#print(result1)
+df_list01 = result1.values.tolist()
+df_list02 = ';'.join(map(str, df_list01))
+#print(df_lists)
+result_01 = str(df_list02)
+result_02 = result_01.replace("[", "")
+result_03 = result_02.replace("]", "")
+df_list2 = result_03.replace(" ", '')
+
+print(df_list1, df_list2, sep = '\n---\n')
+
+
+#----------Phase 3: LTL Learning Formular---------------------------------------------
+#Step 3.1 Locate the time series of bad state(s)
+
+#Step 3.2 Extracts n consecutive instances before the bad state(s)
+#Filter & Get n (-10) rows before and n (+10) after specific value (time series) in pandas
+result = df.loc[df['cluster'] == 0]
+
+result1 = df.loc[df['cluster'] == 1]
+
+#result2 = df.loc[:, ['GS_Pro_Cluster', 'Com_Pro_Cluster', 'GS_Voltage_Cluster', 'Com_Voltage_Cluster', 'GS_RotationSpeed_Cluster', 'MagneticAngle_Cluster', 'cluster'] == 0].index
+#print(result2)
+
+#print(result)
+#print(result1)
+
+#Get the index values and then get the previous two row index values:
+idx = df.loc[df['cluster'] == 0].index
+#print(idx, 'what is this')
+
+filtered_idx = (idx-1).union(idx-10)
+filtered_idx = filtered_idx[filtered_idx > 0]
+
+df_new = df.iloc[filtered_idx]
+print(df_new, 'what is this')
+
+
+#print()
+#star = "-----------------------------------------------------------------------------------------------------------------------------------------"
+#print(df_new)
+
+#print(df_new,  file= trace_file)
+
+print()
+#star = "-----------------------------------------------------------------------------------------------------------------------------------------"
+#print(star, file= trace_file)
+df1 = df_new["cluster"].tolist()
+df1 = ';'.join(map(str, df1))
+print(df1, file= file_name)
+#print(df1, sep=',')
+
+
+
+
+# To generate the LTL formular
+
+#Save traces into example.trace &&
+
+#/Desktop/Application/runtime/venv/lib/python3.10/site-packages$ python3 -m Scarlet.ltllearner
+
+#import os.path
+
+
