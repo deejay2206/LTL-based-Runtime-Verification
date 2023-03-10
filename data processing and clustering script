@@ -20,7 +20,7 @@ sys.stdout = open(file_path, "w")
 
 
 #Step 2: Import csv file
-df = pd.read_csv("captured_file.csv", sep=',', header=0)
+df = pd.read_csv("Satellites_reading_update_23.csv", sep=',', header=0)
 df.shape
 df.info()
 
