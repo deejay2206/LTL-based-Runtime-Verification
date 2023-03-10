@@ -21,8 +21,12 @@ sys.stdout = open(file_path, "w")
 
 #Step 2: Import csv file
 df = pd.read_csv("Satellites_reading_update_23.csv", sep=',', header=0)
+#view first five rows of DataFrame
+#print(df.head())
+
 df.shape
-df.info()
+
+#print(df.info())
 
 df.isnull().sum()
 
@@ -61,12 +65,9 @@ plt.ylabel("SSE")
 plt.savefig('Cluster23_graph.png')
 #Note: Where the sum of squares begins to “bend” or level off, this is typically the optimal number of clusters.
 
-
-
 #Step 5: Perform K-Means Clustering with Optimal K
 #instantiate the k-means class, using optimal number of clusters
 kmeans = KMeans(init="random", n_clusters=2, n_init=10, random_state=1)
-
 
 #fit k-means algorithm to data
 kmeans.fit(scaled_df)
@@ -77,45 +78,59 @@ df['cluster'] = kmeans.labels_
 print(df.to_string())
 #print(df, file = output_file)
 
-
-test_std = df[['Time','GS_PROCESSOR_TEMPERATURE','COM_PROCESSOR_TEMPERATURE','GS_PROCESSOR_VOLTAGE','COM_PROCESSOR_VOLTAGE','ADCS_ROTATIONAL_SPEED','ADCS_MAGNETIC_ANGLE']].std()
-print(test_std)
-
-
-
-Y = df[["Time", "COM_PROCESSOR_TEMPERATURE"]]
-A = df[["Time", "GS_PROCESSOR_VOLTAGE"]]
-B = df[["Time", "COM_PROCESSOR_VOLTAGE"]]
-C = df[["Time", "ADCS_ROTATIONAL_SPEED"]]
-D = df[["Time", "ADCS_MAGNETIC_ANGLE"]]
-
-#scaled_X = StandardScaler().fit_transform(X)
-scaled_Y = StandardScaler().fit_transform(Y)
-scaled_A = StandardScaler().fit_transform(A)
-scaled_B = StandardScaler().fit_transform(B)
-scaled_C = StandardScaler().fit_transform(C)
-scaled_D = StandardScaler().fit_transform(D)
+test_mean = df.mean()
+print(test_mean, "Mean")
+test_std = df.std()
+print(test_std, "Standard Deviation")
+range0 = test_mean - test_std
+print(range0)
+range1 = test_mean + test_std
+print(range1)
 
 
-#kmeans.fit(scaled_X)
-kmeans.fit(scaled_Y)
-kmeans.fit(scaled_A)
-kmeans.fit(scaled_B)
-kmeans.fit(scaled_C)
-kmeans.fit(scaled_D)
+def GS_Pro_Cluster(value):
+    if range0['GS_PROCESSOR_TEMPERATURE'] <= value <= range1['GS_PROCESSOR_TEMPERATURE']:
+        return 1
+    return 0
+df['GS_Pro_Cluster'] = df['GS_PROCESSOR_TEMPERATURE'].map(GS_Pro_Cluster)
 
 
-#GS_Pro_Cluster = kmeans.labels_
-#print(GS_Cluster)
-df["GS_Pro_Cluster"] = kmeans.labels_
-df["Com_Pro_Cluster"] = kmeans.labels_
-df["GS_Voltage_Cluster"] = kmeans.labels_
-df["Com_Voltage_Cluster"] = kmeans.labels_
-df["GS_RotationSpeed_Cluster"] = kmeans.labels_
-df["MagneticAngle_Cluster"] = kmeans.labels_
+def Com_Pro_cluster(value):
+    if range0['COM_PROCESSOR_VOLTAGE'] <= value <= range1['COM_PROCESSOR_VOLTAGE']:
+        return 1
+    return 0
+df['Com_Pro_cluster'] = df['COM_PROCESSOR_VOLTAGE'].map(Com_Pro_cluster)
 
 
-col1_list = df[["GS_Pro_Cluster", "Com_Pro_Cluster", "GS_Voltage_Cluster", "Com_Voltage_Cluster", "GS_RotationSpeed_Cluster", "MagneticAngle_Cluster", "cluster"]]
+def GS_Voltage_cluster(value):
+    if range0['GS_PROCESSOR_VOLTAGE'] <= value <= range1['GS_PROCESSOR_VOLTAGE']:
+        return 1
+    return 0
+df['GS_Voltage_cluster'] = df['GS_PROCESSOR_VOLTAGE'].map(GS_Voltage_cluster)
+
+
+def Com_Voltage_cluster(value):
+    if range0['COM_PROCESSOR_VOLTAGE'] <= value <= range1['COM_PROCESSOR_VOLTAGE']:
+        return 1
+    return 0
+df['Com_Voltage_cluster'] = df['COM_PROCESSOR_VOLTAGE'].map(Com_Voltage_cluster)
+
+
+def RotationSpeed_cluster(value):
+    if range0['ADCS_ROTATIONAL_SPEED'] <= value <= range1['ADCS_ROTATIONAL_SPEED']:
+        return 1
+    return 0
+df['RotationSpeed_cluster'] = df['ADCS_ROTATIONAL_SPEED'].map(RotationSpeed_cluster)
+
+
+def MagneticAngle_cluster(value):
+    if range0['ADCS_MAGNETIC_ANGLE'] <= value <= range1['ADCS_MAGNETIC_ANGLE']:
+        return 1
+    return 0
+df['MagneticAngle_cluster'] = df['ADCS_MAGNETIC_ANGLE'].map(MagneticAngle_cluster)
+
+
+col1_list = df[["GS_Pro_cluster", "Com_Pro_cluster", "GS_Voltage_cluster", "Com_Voltage_cluster", "RotationSpeed_cluster", "MagneticAngle_cluster", "cluster"]]
 #print(col1_list)
 
 
