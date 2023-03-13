@@ -41,6 +41,12 @@ scaled_df = StandardScaler().fit_transform(df)
 #view first five rows of scaled DataFrame
 #print(scaled_df[:5])
 
+# Randomly split the dataset into train data (70% of dataset) and test data (30% of dataset)
+rng = RandomState()
+train = df.sample(frac=0.7, random_state=rng)
+test = df.loc[~df.index.isin(train.index)]
+
+
 #Step 4: Find the Optimal Number of Clusters
 #initialize kmeans parameters
 kmeans_kwargs = {
@@ -133,8 +139,6 @@ df['MagneticAngle_cluster'] = df['ADCS_MAGNETIC_ANGLE'].map(MagneticAngle_cluste
 col1_list = df[["GS_Pro_cluster", "Com_Pro_cluster", "GS_Voltage_cluster", "Com_Voltage_cluster", "RotationSpeed_cluster", "MagneticAngle_cluster", "cluster"]]
 #print(col1_list)
 
-
-
 col_list = col1_list.sort_values(by=['cluster'])
 #print(col_list)
 result = col_list.loc[df['cluster'] == 1]
@@ -162,7 +166,7 @@ df_list2 = result_03.replace(" ", '')
 print(df_list1, df_list2, sep = '\n---\n')
 
 
-#----------Phase 3: LTL Learning Formular---------------------------------------------
+#----------Phase 3: LTL Learning Data Prepapration--------------------------------------------
 #Step 3.1 Locate the time series of bad state(s)
 
 #Step 3.2 Extracts n consecutive instances before the bad state(s)
@@ -204,8 +208,7 @@ print(df1, file= file_name)
 
 
 
-
-# To generate the LTL formular
+# Generate the LTL formular
 
 #Save traces into example.trace &&
 
