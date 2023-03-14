@@ -17,4 +17,4 @@ Some computer applications are unable to process categorical variables because t
 
 # Phase II: Data Clustering
 
-FOr the phase I and II, run the [script](https://github.com/deejay2206/LTL-based-Runtime-Verification/blob/526f3bd817734022210d32b62e4c0d191969a47a/Data%20Processing%20and%20Clustering%20script) using python .
+FOr the phase I and II, run the [data process](https://github.com/deejay2206/LTL-based-Runtime-Verification/blob/62a259a06c95fb984c83cbf771bbdf95e433e02c/data_formation_script) using python3  .
