@@ -23,24 +23,14 @@ With K-means clustering, data points are classified into **K** groups, where `K'
 For the phase I and II, run the [data process](https://github.com/deejay2206/LTL-based-Runtime-Verification/blob/62a259a06c95fb984c83cbf771bbdf95e433e02c/data_formation_script) using python3 data_formation_script.py.
 
 # Phase III: Domain Expert Analysis
-The third phase of our methodology as indicated in Figure~\ref{fig1} is domain expert analysis. A domain expert assists in identifying which of the clusters present a normal behaviour of the system. 
+The third phase of our approach is domain expert analysis. A domain expert assists in identifying which of the clusters present a normal behaviour of the system. 
 
-With the domain expert analysis, we identify a cluster that represents a `good state' and a cluster representing a `bad state'.  
-
-Based on the outcome of the clustering algorithm and domain expert analysis, the following steps are taken: 
-\begin{itemize}
-\item Classify the data into clusters, indicative of `good' and `bad' states
-\item Identify the `bad' instance and locate it in the time series
-\item Extract `n' consecutive instances leading to the `bad' instance in the time series, where `n' presents a numeric value. This extraction would serve as a positive trace while the `bad' instances serve as a negative trace
-%\item Send the output as a trace file into the~\ac{ltl} formula learning algorithm and obtain the \ac{ltl} formula that represents the system.
-\item From the extracted file consisting of traces, partition the traces into positive and negative using ``$\hyp$$\hyp$$\hyp$" as separator with positive as the first set
-\item Store traces as a file named ``\textit{example.trace}"
-\end{itemize}
+With the domain expert analysis, we identify a cluster that represents a ***good state*** and a cluster representing a ***bad state***. Based on the outcome of the clustering algorithm and domain expert analysis, we classify the data into clusters, indicative of ***good state*** and ***bad state***, identify the ***bad state*** instance and locate it in the time series. We further extract ***n*** consecutive instances leading to the ***bad state*** instance in the time series, where ***n*** presents a numeric value. This extraction would serve as a positive trace while the***bad state*** instances serve as a negative trace. The output is stored as a trace file to be injected into the LTL formula learning algorithm to formulate the LTL formula that represents the system. From the extracted file stored as [example.trace] consisting of sequence of traces, partitioned into positive and negative traces using ***---*** as separator with positive as the first set.
 
 Before learning the \ac{ltl} formula, the variables in the trace file are translated into 1s and 0s for the purpose of the \ac{ltl} formula learning application. Hence, the clustering technique or statistical measures such as standard deviation can be deployed on each feature or column to generate a trace file.
 
 # Phase IV: LTL Formula Learning
-The next phase of our approach is the LTL formula learning. At this phase, an \ac{ltl} formula is generated based on the historical data set. In order to learn the LTL formulae, we implement the [Scarlet algorithm](https://github.com/rajarshi008/Scarlet). 
+The next phase of our approach is the LTL formula learning. At this phase, an LTL formula is generated based on the historical data set. In order to learn the LTL formulae, we implement the [Scarlet algorithm](https://github.com/rajarshi008/Scarlet). 
 
 after generating a trace file from the data analysis which contains positive and negative traces. The normal traffic is tagged as a set of positive (***P***) traces, and the abnormal traffic is tagged as a set of negative (***N***) traces. The generated formula serves as a model for every trace in ***P*** and not a model for any of the traces from ***N***.
 
