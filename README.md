@@ -39,3 +39,11 @@ We learn the LTL formula from the trace file using Scarlet. Each trace is a sequ
 At this phase, we formulate the linear temporal logic (LTL) properties for our runtime verification of the digital twin-based satellite infrastructure. The formulae serves as property to be declared in our runtime monitor. Given the transition system (TS) and LTL formula ***φ***, we can check if ***φ*** holds in the TS or not. 
 
 # Phase V: Runtime Checking
+
+Split the test data into number of traffic the runtime monitor can process using the [model_split script]() with the command python3 
+
+Build a model of the system using the captured packets and run as a digital twin of the system using the [dt_script]() with the command python3
+
+Perform the runtime verification checking
+
+Output the result 
