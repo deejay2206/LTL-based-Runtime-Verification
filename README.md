@@ -21,3 +21,29 @@ The next step in the LTL based runtime verification framework is data clustering
 With K-means clustering, data points are classified into **K** groups, where `K' represents the number of clusters based on the distance from each group’s centroid. The data points closest to a given centroid will be clustered under the same category. A larger **K** value will indicate smaller groupings with more granularity whereas a smaller **K** value will have larger groupings and less granularity. As part of the steps in the K-means clustering, instead of a random selection of a number of clusters, we calculate an optimal number based on the scientific data using the elbow method. Using a python script, the processed data obtained from CubeSat was clustered using the K-means algorithm. With the domain expert analysis, the cluster(s) representing ***bad states*** and ***good state*** are identified. 
 
 For the phase I and II, run the [data process](https://github.com/deejay2206/LTL-based-Runtime-Verification/blob/62a259a06c95fb984c83cbf771bbdf95e433e02c/data_formation_script) using python3 data_formation_script.py.
+
+# Phase III: Domain Expert Analysis
+The third phase of our methodology as indicated in Figure~\ref{fig1} is domain expert analysis. A domain expert assists in identifying which of the clusters present a normal behaviour of the system. 
+
+With the domain expert analysis, we identify a cluster that represents a `good state' and a cluster representing a `bad state'.  
+
+Based on the outcome of the clustering algorithm and domain expert analysis, the following steps are taken: 
+\begin{itemize}
+\item Classify the data into clusters, indicative of `good' and `bad' states
+\item Identify the `bad' instance and locate it in the time series
+\item Extract `n' consecutive instances leading to the `bad' instance in the time series, where `n' presents a numeric value. This extraction would serve as a positive trace while the `bad' instances serve as a negative trace
+%\item Send the output as a trace file into the~\ac{ltl} formula learning algorithm and obtain the \ac{ltl} formula that represents the system.
+\item From the extracted file consisting of traces, partition the traces into positive and negative using ``$\hyp$$\hyp$$\hyp$" as separator with positive as the first set
+\item Store traces as a file named ``\textit{example.trace}"
+\end{itemize}
+
+Before learning the \ac{ltl} formula, the variables in the trace file are translated into 1s and 0s for the purpose of the \ac{ltl} formula learning application. Hence, the clustering technique or statistical measures such as standard deviation can be deployed on each feature or column to generate a trace file.
+
+# Phase IV: LTL Formula Learning
+The next phase of our approach is the LTL formula learning. At this phase, an \ac{ltl} formula is generated based on the historical data set. In order to learn the LTL formulae, we implement the [Scarlet algorithm](https://github.com/rajarshi008/Scarlet). 
+
+after generating a trace file from the data analysis which contains positive and negative traces. The normal traffic is tagged as a set of positive (***P***) traces, and the abnormal traffic is tagged as a set of negative (***N***) traces. The generated formula serves as a model for every trace in ***P*** and not a model for any of the traces from ***N***.
+
+We learn the LTL formula from the trace file using Scarlet. Each trace is a sequence of states separated by ***;*** and each state represents the truth value of atomic propositions. An example of a trace is 1,0,1;0,0,0;0,1,1 which consists of three states each of which defines the values of three propositions and by default considered to be p,q,r. 
+
+At this phase, we formulate the linear temporal logic (LTL) properties for our runtime verification of the digital twin-based satellite infrastructure. The formulae serves as property to be declared in our runtime monitor. Given the transition system (TS) and LTL formula ***φ***, we can check if ***φ*** holds in the TS or not. 
