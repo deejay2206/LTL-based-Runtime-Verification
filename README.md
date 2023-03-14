@@ -40,7 +40,7 @@ At this phase, we formulate the linear temporal logic (LTL) properties for our r
 
 # Phase V: Runtime Checking
 
-Split the test data into number of traffic the runtime monitor can process using the [model_split script](https://github.com/deejay2206/LTL-based-Runtime-Verification/blob/9a80124614f53e24baaa902305ca248aabdb9e77/csv_sliptter.py) with the command python3 
+Split the test data into number of traffic the runtime monitor can process using the [model_split script](https://github.com/deejay2206/LTL-based-Runtime-Verification/blob/9a80124614f53e24baaa902305ca248aabdb9e77/csv_sliptter.py) with the command python3 csv_sliptter.py
 
 Build a model of the system using the captured packets and run as a digital twin of the system using the [dt_script](https://github.com/deejay2206/LTL-based-Runtime-Verification/blob/77e0b32193ebe481d06fe9432f4b8f8005246b03/modelling_script.py) with the command python3
 
