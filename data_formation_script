@@ -94,11 +94,11 @@ range1 = test_mean + test_std
 print(range1)
 
 
-def GS_Pro_Cluster(value):
+def GS_Pro_cluster(value):
     if range0['GS_PROCESSOR_TEMPERATURE'] <= value <= range1['GS_PROCESSOR_TEMPERATURE']:
         return 1
     return 0
-df['GS_Pro_Cluster'] = df['GS_PROCESSOR_TEMPERATURE'].map(GS_Pro_Cluster)
+df['GS_Pro_cluster'] = df['GS_PROCESSOR_TEMPERATURE'].map(GS_Pro_cluster)
 
 
 def Com_Pro_cluster(value):
