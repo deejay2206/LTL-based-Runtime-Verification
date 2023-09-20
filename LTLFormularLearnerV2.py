@@ -122,7 +122,7 @@ def fetch_rows_around_attack(csv_file, m):
     rows_to_fetch = []
     for index in attack_rows.index:
         start_index = max(0, index - m)
-        end_index = min(len(df), index + m + 1)
+        end_index = min(len(df), index + m)
         rows_to_fetch.extend(range(start_index, end_index))
 
     # Remove the fetched rows from the original DataFrame
