@@ -67,7 +67,7 @@ def print_rows_before_attack(csv_file, n):
      # Fetch n rows before each 'Attack' occurrence
     fetched_rows = []
     for index in attack_indices:
-        start_index = max(0, index - n + 1)
+        start_index = max(0, index - n)
         end_index = index
         rows_before_attack = df.iloc[start_index:end_index]
         fetched_rows.append(rows_before_attack)
