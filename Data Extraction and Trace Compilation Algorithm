@@ -1,0 +1,61 @@
+import pandas as pd
+
+# Load CSV file into DataFrame
+df = pd.read_csv("your_data.csv")
+
+# Check for 'Cluster_Label' column
+if 'Cluster_Label' not in df.columns:
+    print("Error: 'Cluster_Label' not found.")
+    exit()
+
+# Semantic mapping for readability
+CLUSTER_NORMAL = 0
+CLUSTER_ANOMALY = 1
+CLUSTER_PREDICTIVE = 2
+
+# Initialize pattern lists
+normal_patterns = []
+anomaly_patterns = []
+predictive_patterns = []
+
+# Count unique clusters
+unique_clusters = set(df['Cluster_Label'])
+
+# Define window sizes
+m = 10  # for normal and anomaly
+n = 5   # for predictive
+
+# Extraction logic
+if {CLUSTER_NORMAL, CLUSTER_ANOMALY, CLUSTER_PREDICTIVE}.issubset(unique_clusters):
+    for i, row in df.iterrows():
+        label = row['Cluster_Label']
+        if label == CLUSTER_NORMAL and i + m <= len(df):
+            normal_patterns.append(df.iloc[i:i + m])
+        elif label == CLUSTER_ANOMALY and i + m <= len(df):
+            anomaly_patterns.append(df.iloc[i:i + m])
+        elif label == CLUSTER_PREDICTIVE and i + n <= len(df):
+            predictive_patterns.append(df.iloc[i:i + n])
+
+elif {CLUSTER_NORMAL, CLUSTER_ANOMALY}.issubset(unique_clusters):
+    for i, row in df.iterrows():
+        label = row['Cluster_Label']
+        if label == CLUSTER_NORMAL and i + m <= len(df):
+            normal_patterns.append(df.iloc[i:i + m])
+        elif label == CLUSTER_ANOMALY and i + m <= len(df):
+            anomaly_patterns.append(df.iloc[i:i + m])
+    
+    # Find predictive pattern before first anomaly
+    first_anomaly_idx = df[df['Cluster_Label'] == CLUSTER_ANOMALY].index.min()
+    if first_anomaly_idx is not None and first_anomaly_idx - n >= 0:
+        predictive_patterns.append(df.iloc[first_anomaly_idx - n:first_anomaly_idx])
+
+# Compile and write traces
+with open("patterns.trace", "w") as f:
+    for trace in predictive_patterns:
+        f.write(trace.to_csv(index=False))
+        f.write("\n---\n")
+    for trace in anomaly_patterns:
+        f.write(trace.to_csv(index=False))
+        f.write("\n---\n")
+
+print("Traces written to patterns.trace")
